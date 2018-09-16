@@ -1,5 +1,6 @@
 import face_recognition
 import cv2
+import time
 
 # This is a demo of running face recognition on live video from your webcam. It's a little more complicated than the
 # other example, but it includes some basic performance tweaks to make things run a lot faster:
@@ -31,16 +32,16 @@ francis_encoding = face_recognition.face_encodings(francis_image)[0]
 known_face_encodings = [
     # obama_face_encoding,
     # biden_face_encoding,
-    #francis_encoding
+    # francis_encoding
 ]
 known_face_names = [
-    # "Barack Obama",
-    # "Joe Biden",
+    "Barack Obama",
+    "Joe Biden",
     "Francis"
 ]
 
 # In frames
-WAIT_BETWEEN_MATCHES = 30*3
+WAIT_BETWEEN_MATCHES = 30*5
 
 # For not processing the same person multiple times in a short period of time
 time_delay = {x: 0 for x in known_face_names}
@@ -51,6 +52,11 @@ face_locations = []
 face_encodings = []
 face_names = []
 process_this_frame = True
+
+
+def post_request(name, picture_time):
+    print(name, picture_time)
+    pass
 
 
 while True:
@@ -64,7 +70,7 @@ while True:
     rgb_small_frame = small_frame[:, :, ::-1]
 
     # Every frame update the frame delay if needed
-    time_delay = {x: y-1 if y != 0 else 0 for x, y in time_delay.items()}
+    time_delay = {x: y-1 if y > 0 else 0 for x, y in time_delay.items()}
 
     # Only process every other frame of video to save time
     if process_this_frame:
@@ -88,6 +94,7 @@ while True:
                     name = "Unknown"
                 else:
                     time_delay[name] = WAIT_BETWEEN_MATCHES
+                    post_request(name, time.gmtime())
 
             face_names.append(name)
 
@@ -110,8 +117,13 @@ while True:
         font = cv2.FONT_HERSHEY_DUPLEX
         cv2.putText(frame, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
 
+        if name != 'Unknown':
+            post_request(name, time.time())
+
+
     # Display the resulting image
     cv2.imshow('Video', frame)
+
 
     # Hit 'q' on the keyboard to quit!
     if cv2.waitKey(1) & 0xFF == ord('q'):
