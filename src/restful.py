@@ -5,12 +5,13 @@ from flask import request
 
 app = Flask(__name__)
 
-faces = {
+faces = [
+    {
         'name': "Bob",
         'time': "123"
-}
-
-@app.route('/facial/api/v1.0/faces', methods=['GET'])
+    }
+]
+@app.route('/facial/api/v1.0/faces/get', methods=['GET'])
 def get_faces():
     return jsonify({'faces': faces})
 
@@ -18,16 +19,17 @@ def get_faces():
 def not_found(error):
     return make_response(jsonify({'error': 'Not found'}), 404)
 
-@app.route('/facial/api/v1.0/faces', methods=['POST'])
+@app.route('/facial/api/v1.0/faces/post', methods=['POST'])
 def create_face():
-    if not request.json or not 'faces' in request.json:
-        abort(400)
+    # if not request.json or not 'faces' in request.json:
+    #     quit(400)
     face = {
         'name': request.json['name'],
-        'date': request.json['date']
+        'time': request.json['time']
     }
     faces.append(face)
-    return jsonify({'face': face}), 201
+    # return jsonify({'face': face}), 201
+    return ''
 
 if __name__ == '__main__':
     app.run(debug=True)
