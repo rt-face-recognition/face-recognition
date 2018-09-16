@@ -2,8 +2,11 @@
 from flask import Flask, jsonify
 from flask import make_response
 from flask import request
+from werkzeug.contrib.cache import MemcachedCache
 
 app = Flask(__name__)
+
+cache = MemcachedCache(['127.0.0.1:11211'])
 
 faces = [
     {
@@ -13,6 +16,7 @@ faces = [
 ]
 @app.route('/facial/api/v1.0/faces/get', methods=['GET'])
 def get_faces():
+    faces = cache.get('faces')
     return jsonify({'faces': faces})
 
 @app.errorhandler(404)
@@ -27,6 +31,8 @@ def create_face():
         'name': request.json['name'],
         'time': request.json['time']
     }
+
+    cache.set('faces', face, timeout=5 * 60)
     faces.append(face)
     # return jsonify({'face': face}), 201
     return ''
