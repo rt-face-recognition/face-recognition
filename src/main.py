@@ -13,6 +13,7 @@ import cv2
 # Get a reference to webcam #0 (the default one)
 video_capture = cv2.VideoCapture(0)
 
+"""
 # Load a sample picture and learn how to recognize it.q
 obama_image = face_recognition.load_image_file("C:/Users/francis/PycharmProjects/face-recognition/lib/obama/58015949-079c-492e-9041-c5d499fad45f-Election_2018_Ohio_Obama-GNAMT9AVN.1.jpg")
 obama_face_encoding = face_recognition.face_encodings(obama_image)[0]
@@ -23,11 +24,14 @@ biden_face_encoding = face_recognition.face_encodings(biden_image)[0]
 
 francis_image = face_recognition.load_image_file("C:/Users/francis/PycharmProjects/face-recognition/lib/francis.jpg")
 francis_encoding = face_recognition.face_encodings(francis_image)[0]
+
+
+"""
 # Create arrays of known face encodings and their names
 known_face_encodings = [
     # obama_face_encoding,
     # biden_face_encoding,
-    francis_encoding
+    #francis_encoding
 ]
 known_face_names = [
     # "Barack Obama",
@@ -35,11 +39,19 @@ known_face_names = [
     "Francis"
 ]
 
+# In frames
+WAIT_BETWEEN_MATCHES = 30*3
+
+# For not processing the same person multiple times in a short period of time
+time_delay = {x: 0 for x in known_face_names}
+
+
 # Initialize some variables
 face_locations = []
 face_encodings = []
 face_names = []
 process_this_frame = True
+
 
 while True:
     # Grab a single frame of video
@@ -50,6 +62,9 @@ while True:
 
     # Convert the image from BGR color (which OpenCV uses) to RGB color (which face_recognition uses)
     rgb_small_frame = small_frame[:, :, ::-1]
+
+    # Every frame update the frame delay if needed
+    time_delay = {x: y-1 if y != 0 else 0 for x, y in time_delay.items()}
 
     # Only process every other frame of video to save time
     if process_this_frame:
@@ -67,6 +82,12 @@ while True:
             if True in matches:
                 first_match_index = matches.index(True)
                 name = known_face_names[first_match_index]
+
+                # Ignore this guy if a delay is happening
+                if time_delay[name] != 0:
+                    name = "Unknown"
+                else:
+                    time_delay[name] = WAIT_BETWEEN_MATCHES
 
             face_names.append(name)
 
