@@ -1,6 +1,7 @@
 import face_recognition
 import cv2
 import time
+from src.database import DatabaseConnection
 
 # This is a demo of running face recognition on live video from your webcam. It's a little more complicated than the
 # other example, but it includes some basic performance tweaks to make things run a lot faster:
@@ -58,7 +59,8 @@ def post_request(name, picture_time):
     print(name, picture_time)
     pass
 
-
+database_connection = DatabaseConnection()
+database_connection.createTable()
 while True:
     # Grab a single frame of video
     ret, frame = video_capture.read()
@@ -97,6 +99,9 @@ while True:
                     post_request(name, time.gmtime())
 
             face_names.append(name)
+            if (len(face_names) > 0 and "Unknown" not in face_names):
+                for fn in face_names:
+                    DatabaseConnection.insert_new_record(fn)
 
     process_this_frame = not process_this_frame
 
