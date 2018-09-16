@@ -6,7 +6,7 @@ from werkzeug.contrib.cache import MemcachedCache
 
 app = Flask(__name__)
 
-cache = MemcachedCache(['127.0.0.1:11211'])
+cache = MemcachedCache("http://facial-recognition-hack.herokuapp.com")
 
 faces = [
     {
