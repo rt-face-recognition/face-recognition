@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 faces = {
         'name': "Bob",
-        'date': "123"
+        'time': "123"
 }
 
 @app.route('/facial/api/v1.0/faces', methods=['GET'])
