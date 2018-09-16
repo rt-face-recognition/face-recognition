@@ -5,14 +5,10 @@ from flask import request
 
 app = Flask(__name__)
 
-faces = [
-    {
-        'id': 1,
-        'title': u'Buy groceries',
-        'description': u'Milk, Cheese, Pizza, Fruit, Tylenol',
-        'done': False
-    }
-]
+faces = {
+        'name': "Bob",
+        'date': "123"
+}
 
 @app.route('/facial/api/v1.0/faces', methods=['GET'])
 def get_faces():
